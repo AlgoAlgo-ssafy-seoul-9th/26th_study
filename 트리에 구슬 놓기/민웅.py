@@ -1,3 +1,4 @@
+# 재귀 DP (트리형태 탐색하면서 Yes or No 선택지유형) -> 백준 - 우수마을(최대값 dp), 사회망 서비스(최소값 dp)
 import sys
 sys.setrecursionlimit(10**5)
 input = sys.stdin.readline
