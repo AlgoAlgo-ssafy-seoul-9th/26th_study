@@ -85,6 +85,54 @@ for _ in range(N):
 ### [상미](./절댓값%20힙/상미.py)
 
 ```py
+import sys
+input = sys.stdin.readline
+
+def push(heap, x):
+    heap.append(x)
+    currentIndex = len(heap) - 1
+    while currentIndex > 0:
+        parentIndex = (currentIndex - 1) // 2
+        if abs(heap[currentIndex]) < abs(heap[parentIndex]) or (abs(heap[currentIndex]) == abs(heap[parentIndex]) and heap[currentIndex] < heap[parentIndex]):
+            heap[currentIndex], heap[parentIndex] = heap[parentIndex], heap[currentIndex]
+            currentIndex = parentIndex
+        else:
+            break
+
+def pop(heap):
+    if not heap:
+        return 0
+
+    minValue = heap[0]
+    heap[0] = heap[-1]
+    heap.pop()
+
+    currentIndex = 0
+    while currentIndex * 2 + 1 < len(heap):
+        leftChildIndex = currentIndex * 2 + 1
+        rightChildIndex = currentIndex * 2 + 2
+        minChildIndex = leftChildIndex
+
+        if rightChildIndex < len(heap) and (abs(heap[rightChildIndex]) < abs(heap[leftChildIndex]) or (abs(heap[rightChildIndex]) == abs(heap[leftChildIndex]) and heap[rightChildIndex] < heap[leftChildIndex])):
+            minChildIndex = rightChildIndex
+
+        if abs(heap[currentIndex]) > abs(heap[minChildIndex]) or (abs(heap[currentIndex]) == abs(heap[minChildIndex]) and heap[currentIndex] > heap[minChildIndex]):
+            heap[currentIndex], heap[minChildIndex] = heap[minChildIndex], heap[currentIndex]
+            currentIndex = minChildIndex
+        else:
+            break
+
+    return minValue
+
+N = int(input())
+heap = []
+
+for _ in range(N):
+    x = int(input())
+    if x == 0:
+        print(pop(heap))
+    else:
+        push(heap, x)
 
 ```
 
@@ -110,7 +158,7 @@ class AbsoluteHeap:
     def heap_sort(self, node:int) -> None:
         # 시작노드가 root 노드 일 때 -> 아래로 내려감
         if node == 0:
-            
+
             while node < self.length:
                 left, right = 2*node+1, 2*node+2
                 # 길이를 넘어가면 트리에서 벗어남(leaf 노드가 0임)
@@ -118,7 +166,7 @@ class AbsoluteHeap:
                     break
                 if left >= self.length and right >= self.length:
                     node += 1
-                # leaf 노드에서 하나만 넘어가는 경우(leaf 노드가 없는 경우)    
+                # leaf 노드에서 하나만 넘어가는 경우(leaf 노드가 없는 경우)
                 elif left >= self.length:   # 왼쪽 leaf 노드 0
                     # 절댓값이 작은 것 기준, 같을 땐 값이 작은 친구를 root 노드와 교환
                     if abs(self.tree[right]) < abs(self.tree[node]):
@@ -127,7 +175,7 @@ class AbsoluteHeap:
                         if self.tree[right] < self.tree[node]:
                             self.tree[right], self.tree[node] = self.tree[node], self.tree[right]
                     node = right    # 다음 탐색 확인
-                    
+
                 elif right >= self.length:  # 오른쪽 leaf 노드 0
                     if abs(self.tree[left]) < abs(self.tree[node]):
                         self.tree[left], self.tree[node] = self.tree[node], self.tree[left]
@@ -139,7 +187,7 @@ class AbsoluteHeap:
                     # 모두 범위 내의 경우(leaf 노드가 둘 다 있는 경우)
                     # 왼쪽 leaf 노드와 오른쪽 leaf 노드를 비교
                     # 더 작은 쪽 leaf 노드와 root 노드 비교 -> root 노드가 더 크다면 교환
-                    
+
                     if abs(self.tree[left]) > abs(self.tree[right]):
                         if abs(self.tree[node]) > abs(self.tree[right]) or (abs(self.tree[node]) ==  abs(self.tree[right]) and self.tree[node] > self.tree[right]):
                             self.tree[node], self.tree[right] = self.tree[right], self.tree[node]
@@ -161,25 +209,25 @@ class AbsoluteHeap:
                 # 다음 노드를 탐색하지 더 이상 않아도 되는 경우 break
                 if node != left and node != right:
                     break
-                
+
         else:   # 시작 노드가 0이 아닌 경우 -> leaf 노드에서 root노드 쪽으로 탐색
             while node > 0:
                 # 인덱스가 leaf 노드 기준 왼쪽(홀수), 오른쪽(짝수)
                 # root node(N) -> left leaf node (2*N+1) / right leaf node (2*N + 2)
                 if node % 2:    # left leaf node (2*N+1) -> (2*N+1)//2 = N
-                    root = node // 2    
+                    root = node // 2
                 else:           # right leaf node (2*N+2) -> (2*N+2) //2 -1 = N
                     root = node // 2 - 1
-                
-                # root 노드와 비교하여 교환할 여지가 있으면 교환하여 탐색 
+
+                # root 노드와 비교하여 교환할 여지가 있으면 교환하여 탐색
                 if abs(self.tree[root]) > abs(self.tree[node]) or (abs(self.tree[root]) == abs(self.tree[node]) and self.tree[root] > self.tree[node]):
                     self.tree[root], self.tree[node] = self.tree[node], self.tree[root]
                     node = root
                 else:   # 교환할 필요 없으면 더 이상 탐색 X
                     break
-                    
+
         return
-        
+
     # 힙 푸시
     def push_num(self, num:int) -> None:
         # 마지막 노드에 추가하여 힙 소트(leaf -> root)
@@ -187,7 +235,7 @@ class AbsoluteHeap:
         self.heap_sort(self.length)
         self.length += 1
         return
-        
+
     # 힙 팝
     def pop_num(self) -> int:
         # root 노드를 제거한 후, 마지막 leaf 노드를 root 노드에 넣어 힙 소트(root -> leaf)
@@ -230,7 +278,6 @@ if __name__ == "__main__":
 
 
 ```
-
 
 <br/>
 
@@ -511,7 +558,7 @@ def dfs(i:int, j:int, cnt:int, dr:int):
     if i == 0 or i == N+1 or j == 0 or j == N+1:
         return cnt
     # 벽 인덱스 및 벽 위치
-    wall = (dr+3)%4 
+    wall = (dr+3)%4
     walli, wallj = i+direction[wall][0], j+direction[wall][1]
     # 오른손에 벽이 있을 경우
     if field[walli][wallj] =="#":
@@ -525,14 +572,14 @@ def dfs(i:int, j:int, cnt:int, dr:int):
                     return dfs(ni, nj, cnt+1, d%4)
                 else:   # 4번째 방문하면 나갈 수 없음을 감지하고 포기
                     return -1
-    else:   
+    else:
     # 벽이 없으면 그 쪽으로 이동
         if visited[walli][wallj] < 4:
             visited[walli][wallj] += 1
             return dfs(walli, wallj, cnt+1, wall)
-    
+
     return -1
-    
+
 
 print(dfs(start[0], start[1], 0, 0))
 ```
